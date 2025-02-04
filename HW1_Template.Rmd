@@ -1,0 +1,172 @@
+---
+title: "Plastic - Waste Homework1"
+subtitle: "Zeynep Hendem / 220507015"
+output: 
+  tufte::tufte_html:
+    css: ../hw.css
+    tufte_variant: "envisioned"
+    highlight: pygments
+link-citations: yes
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+#library(dsbox)
+library(lubridate)
+library(ggplot2)
+    
+knitr::opts_chunk$set(out.width = "100%")
+```
+
+## Exercise 1 (10 pts)
+
+Verify that the dataset has loaded into the Environment. How many observations are in the dataset?
+
+-   Have a quick look at the data and notice that there are cells taking the value `NA` -- what does this mean?
+
+-   Create the distribution of plastic waste per capita in 2010.
+
+✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document , knit the document, make sure that your added R code chunk works well and you did not face with any knitting problem*
+
+```{r}
+install.packages("readr")
+library(readr)
+plastic_waste <- read_csv("plastic-waste.csv")
+
+
+library(ggplot2)
+
+nrow(plastic_waste)
+head(plastic_waste)
+summary(plastic_waste)
+
+ggplot(plastic_waste, aes(x = plastic_waste_per_cap)) +
+    geom_histogram(binwidth = 0.1, fill = "blue", color = "black") +
+    labs(title = "Distribution of Plastic Waste Per Capita in 2010",
+        x = "Plastic Waste Per Capita (kg/day)",
+        y = "Frequency")
+
+```
+
+-   Veri kümesinin ortama yüklendiğini "nrow", "head", "summary" komutlarıyla doğruladım.
+
+-   Veri setinde kaç gözlem olduğunu "nrow" komutuyla 240 olarak tespit ettim.
+
+-   NA (Not Available), bir değerin eksik olduğunu belirtir. Veri setlerinde bir gözlemin ölçülmediği, kaydedilmediği veya herhangi bir neden dolayısıyla eksik olduğu durumlarda kullanılır.
+
+## Exercise 2 (20 pts)
+
+-   Plot, using histograms, the distribution of plastic waste per capita faceted by continent.
+
+-   What can you say about how the continents compare to each other in terms of their plastic waste per capita?
+
+✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document , knit the document, make sure that your added R code chunk works well and you did not face with any knitting problem*
+
+```{r}
+ggplot(data = plastic_waste, aes(x = plastic_waste_per_cap)) +
+  geom_histogram(binwidth = 0.2, fill = "blue", color = "black", alpha = 0.7) +
+  facet_wrap(~ continent) +
+  labs(title = "Distribution of Plastic Waste Per Capita in 2010",
+       x = "Plastic Waste Per Capita (kg)",
+       y = "Frequency") 
+```
+
+-   Kişi başına plastik atık dağılımının 2010'da en fazla olduğu kıta Avrupa kıtasıdır. Kişi başına plastik atık dağılımının fazla olduğu kıtaların sıralaması Kuzey Amerika, Asya, Afrika, Okyanusya ve Güney Amerika şeklinde devam etmektedir.
+
+## Exercise 3 (30 pts)
+
+For some further illustration,
+
+-   Pick another single numerical variable and make a histogram.
+
+-   Pick a single categorical variable and make a bar plot.
+
+-   Pick a numerical variable and a categorical variable. Make a visualisation to examine the relationship between two different types variables.
+
+Remember that a data visualisation is just a pretty picture unless you know what the visualisation is about, so it is important to add axis labels and a title. Edit your code with a suitable title and axis labels. Try to be as clear as possible !
+
+✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document , knit the document, make sure that your added R code chunk works well and you did not face with any knitting problem*
+
+```{r}
+# a) Tek bir sayısal değişkenin histogramını oluşturun.
+ggplot(data = plastic_waste, mapping = aes(x = gdp_per_cap)) +
+  geom_histogram(binwidth = 10000, fill = "blue", color = "black", alpha = 0.7) +
+  labs(title = "GDP Per Capita Distribution",
+       x = "GDP Per Capita",
+       y = "Frequency")
+```
+
+```{r}
+# b) Tek bir kategorik değişkenin bar grafiğini oluşturun.
+ggplot(data = plastic_waste, mapping = aes(x = continent)) +
+  geom_bar(fill = "blue", color = "black") +
+  labs(title = "Distribution of Plastic Waste by Continent",
+       x = "Continent",
+       y = "Frequency")
+```
+
+```{r}
+# c) Bir sayısal değişken ve bir kategorik değişken arasındaki ilişkiyi incelemek için görselleştirme yapın.
+ggplot(data = plastic_waste, mapping = aes(x = continent, y = plastic_waste_per_cap)) +
+  geom_boxplot(fill = "blue", color = "black") +
+  labs(title = "Plastic Waste Per Capita by Entity",
+       x = "Continent",
+       y = "Plastic Waste Per Capita (kg)")
+```
+
+-   Grafiğe göre plastik atık üretiminde kıtalar arasında belirgin farklılıklar bulunmamaktadır. Bununla birlikte, Kuzey Amerika'da gözle görülür bir uç değer bulunmaktadır. Bu durum bazı ülkelerin ortalamanın oldukça üzerinde plastik atık ürettiğini göstermektedir.
+
+## Exercise 4 (40 pts)
+
+-   Visualize the relationship between plastic waste per capita and mismanaged plastic waste per capita using a scatterplot. Describe the relationship.
+
+-   Color the points in the scatterplot by continent. Does there seem to be any clear distinctions between continents with respect to how plastic waste per capita and mismanaged plastic waste per capita are associated?
+
+-   Apart from coloring, how can you recreate your above plot by including the same visualization story ? Try to be creative as far as you can!
+
+✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document , knit the document, make sure that your added R code chunk works well and you did not face with any knitting problem*
+
+```{r}
+# a) Plastik atık ve yanlış yönetilen plastik atık arasındaki ilişkiyi ile görselleştirin.
+ggplot(data = plastic_waste, mapping = aes(x = plastic_waste_per_cap, y = mismanaged_plastic_waste_per_cap)) +
+  geom_point() +
+  labs(title = "Plastic Waste vs Mismanaged Waste",
+       x = "Plastic Waste Per Capita (kg)",
+       y = "Mismanaged Plastic Waste Per Capita (kg)")
+```
+
+-   Noktaların yoğunluğu, düşük plastik atık üretimi ve hatalı yönetimin genellikle düşük seviyelerde kaldığını göstermektedir. Sağ üst köşede yer alan uç değer, ortalamanın oldukça üzerinde plastik atık üretimi ve yönetim sorunlarına sahip istisnai bir ülkeye işaret etmektedir.
+
+```{r}
+# b) Noktaları kıta bazında renklendirin.
+ggplot(data = plastic_waste, mapping = aes(x = plastic_waste_per_cap, y = mismanaged_plastic_waste_per_cap, color = continent)) +
+  geom_point() +
+  labs(title = "Plastic Waste vs Mismanaged Waste",
+       x = "Plastic Waste Per Capita (kg)",
+       y = "Mismanaged Plastic Waste Per Capita (kg)")
+```
+
+-   Veriler genel olarak yoğunlaşmış ve sağa çarpık bir dağılıma sahiptir. Kıtalara göre belirgin bir farklılık yoktur. Düşük plastik atık üretimine sahip ülkelerde bile yanlış yönetilen plastik atık oranları yüksek olabilmektedir. Bu çıkarım, plastik atık yönetimi etkinliğinin her zaman plastik tüketimiyle doğru orantılı olmadığını göstermektedir.
+
+```{r}
+# c) Renk vermek dışında aynı görselleştirmeyi nasıl yeniden oluşturabiliriz?
+
+# Faceting ile oluşturma:
+ggplot(data = plastic_waste, mapping = aes(x = plastic_waste_per_cap, y = mismanaged_plastic_waste_per_cap)) +
+  geom_point() +
+  facet_wrap(~ continent) +
+  labs(title = "Plastic Waste vs Mismanaged Plastic Waste by Continent (Faceting)",
+       x = "Plastic Waste Per Capita (kg)",
+       y = "Mismanaged Plastic Waste Per Capita (kg)") 
+```
+
+-   Renklendirme dışında faceting ile görselleştirme oluşturduğumda diğer yöntemlere göre daha anlaşılır olduğunu gözlemledim.
+
+```{r}
+# Shape ile oluşturma:
+ggplot(data = plastic_waste, mapping = aes(x = plastic_waste_per_cap, y = mismanaged_plastic_waste_per_cap, shape = continent)) +
+  geom_point() +
+  labs(title = "Plastic Waste and Mismanaged Plastic Waste by Continent (Shape-based)",
+       x = "Plastic Waste Per Capita (kg)",
+       y = "Mismanaged Plastic Waste Per Capita (kg)")
+```

@@ -1,0 +1,248 @@
+---
+title: "Medical Cost Dashboard"
+author: "ZEYNEP HENDEM & 220507015"
+date: "26.01.2025"
+output: 
+  flexdashboard::flex_dashboard:
+    theme: cerulean
+    social: menu
+    source: embed
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(rio)
+library(tidyverse)
+library(janitor)
+library(plotly)
+library(ggplot2)
+library(magrittr)
+
+#Veri setinin yüklenmesi
+insurance <- read.csv("insurance.csv")
+
+
+```
+
+Veri Seti
+=========================================
+
+Column
+-----------------------------------------
+***Değişkenlerin Listesi***
+
+```{r}
+
+colnames(insurance)
+
+```
+
+***Ana Özet***
+
+```{r}
+
+summary(insurance)
+glimpse(insurance)
+
+```
+
+
+Grafikler {.storyboard}
+=========================================
+
+### Dağılım Grafiği
+
+```{r, warning= F, message=F}
+
+ggplot(insurance, aes(x = age, y = charges)) +
+  geom_point(shape = 19, alpha = 0.9, color = "darkcyan") +
+  geom_smooth(method = "loess", se = TRUE, color = "red", linetype = "dashed", size = 0.8) +
+  labs(
+    title = "Age vs. Medical Charges",
+    x = "Age",
+    y = "Medical Charges",
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
+    plot.subtitle = element_text(hjust = 0.5, size = 12),
+    axis.title = element_text(size = 12),
+    axis.text = element_text(size = 8)
+  )
+
+```
+
+***
+Dağılım grafiği, yaş ile tıbbi harcamalar arasındaki ilişkiyi gösterir. Noktalar, bireylerin yaşları ile tıbbi harcamalarını temsil etmektedir. Harcamaların genel olarak düşük değerlere yığıldığı ancak yaş arttıkça yüksek harcama yapan bireylerin sayısında bir artış olduğu gözlemlenmektedir. Regresyon çizgisi, yaş ile harcamalar arasında hafif pozitif bir ilişki olduğunu göstermektedir. Bununla birlikte harcamaların değişkenlik gösterebildiği ve yaşın tıbbi harcamaları tek başına açıklamakta yetersiz kaldığı, güven aralığındaki genişlikten anlaşılmaktadır.
+
+Genel eğilim yaşlandıkça tıbbi harcamaların artması yönünde olsa da düşük yaş gruplarında da yüksek harcamaların görülebilmesi dikkat çekicidir. Bu durum özel sağlık durumları veya yüksek tedavi maliyetlerinden kaynaklanıyor olabilir. Bireyler arasında büyük bir varyans olması, harcamaların yaş dışında başka faktörlere de bağlı olduğunu göstermektedir. Yapılan analiz sağlık hizmetlerinin planlanması ve kaynakların dağıtılması konusunda faydalı bir içgörü sağlayabilir.
+
+### Etkileşimli Dağılım Grafiği
+
+```{r message=FALSE, warning=FALSE}
+
+p1 <- ggplot(insurance, aes(x = age, y = charges)) +
+  geom_point(shape = 19, alpha = 0.9, color = "darkcyan") +
+  geom_smooth(method = "loess", se = TRUE, color = "red", linetype = "dashed", size = 0.8) +
+  labs(
+    title = "Age vs. Medical Charges",
+    x = "Age",
+    y = "Medical Charges",
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
+    plot.subtitle = element_text(hjust = 0.5, size = 12),
+    axis.title = element_text(size = 12),
+    axis.text = element_text(size = 8)
+  )
+ggplotly(p1)
+
+```
+
+***
+Etkileşimli grafikler, veri dağılımını analiz etmek için özellikle dağılım grafiklerinde kullanıldığında büyük avantajlar sağlar. Etkileşimli grafikler, statik grafiklere kıyasla kullanıcıya veriyi daha detaylı inceleme ve analiz etme imkanı sunar. Örneğin; grafik üzerindeki bir veri noktasına tıklandığında o noktaya ait spesifik bilgiler (örneğin, yaş ve medikal harcamalar gibi) görüntülenebilir. Kullanıcı grafiği yakınlaştırabilir veya kaydırarak belirli bir bölgeye odaklanabilir. Geniş veri setlerinde veya yoğun veri noktalarının olduğu durumlarda veriyi daha iyi anlamaya yardımcı olur. Birden fazla veri katmanının olduğu grafiklerde, kullanıcı bu katmanları açıp kapatarak sadece ilgilendiği bilgiyi görebilir.
+
+Etkileşim grafik için dağılım grafiğinin seçilmesinin temel nedeni, bireysel veri noktalarını detaylı bir şekilde
+inceleyebilme imkanı sunmasıdır. Dağılım grafiği, yaş ve medikal harcamalar arasındaki ilişkinin doğasını (örneğin, doğrusal mı yoksa başka bir model mi izlediğini) görselleştirmek için idealdir. Histogram ve boxplot gibi grafik türlerinin okunabilirliği dağılım grafiklerine göre daha kolaydır. Dolayısıyla dağılım grafiğinde her bir noktanın hangi değere karşılık geldiğini etkileşimli şekilde görmek kullanıcıya kolaylık sağlar.
+
+### Histogram Grafiği
+
+```{r message=FALSE, warning=FALSE}
+
+ggplot(insurance, aes(x = bmi)) +
+  geom_histogram(binwidth = 0.5, color = "white", fill = "orange", alpha = 0.9) +  
+  labs(
+    title = "Distribution of BMI",
+    x = "Body Mass Index (BMI)",
+    y = "Count"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 16),  
+    plot.subtitle = element_text(hjust = 0.5, size = 12),  
+    axis.title = element_text(size = 12),
+    axis.text = element_text(size = 10)
+  )
+
+```
+
+***
+Vücut kitle indeksi (BMI) dağılımını gösteren bir histogram üretilmiştir. X ekseni, bireylerin vücut kitle indeksini temsil eden sayısal değerleri gösterirken Y ekseni ise bu değer aralığında kaç kişinin bulunduğunu göstermektedir. Grafik BMI'nin genel popülasyonda nasıl dağıldığını görmemizi sağlar. BMI, kişinin kilosunun boyuna oranını ifade eden bir ölçüdür. Bireylerin zayıf, normal kilolu, fazla kilolu ya da obez olup olmadığını değerlendirmekte kullanılır. 
+
+Grafiğin detaylarına bakıldığında BMI'nin çoğunlukla 20 ile 35 arasında yoğunlaştığı görülmektedir. Grafiğin zirve noktası yaklaşık 25 BMI civarındadır, bu durum popülasyondaki en yaygın BMI değerinin bu civarda olduğunu işaret eder. 25'in üzerindeki BMI değerleri fazla kilolu ya da obez bireyleri ifade ederken 18'in altındaki değerler zayıf bireyleri temsil eder. 40 ve üzeri BMI'ye doğru gidildikçe bireylerin sayısı hızla azalmaktadır. Bu eğilim aşırı obez bireylerin sayısının düşük olduğunu gösterir. Sol uçta ise 15-20 BMI aralığında bazı bireylerin bulunduğu görülmektedir ancak bu grup da oldukça azdır. Histogram genel olarak popülasyonda ortalama BMI değerinin 25 civarında olduğunu, çok düşük ya da çok yüksek BMI'lerin daha nadir olduğunu gösteren bir dağılım sunmaktadır.
+
+
+### Kutu Grafiği-1
+
+```{r}
+
+ggplot(insurance, aes(x = smoker, y = charges, fill = smoker)) +
+  geom_boxplot(color = "black", alpha = 0.9) +  
+  scale_fill_manual(values = c(
+    "yes" = "green",  
+    "no" = "red"   
+  )) +
+  labs(
+    title = "Medical Charges by Smoking Status",
+    x = "Smoking Status",
+    y = "Medical Charges",
+    fill = "Smoker"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 16),  
+    plot.subtitle = element_text(hjust = 0.5, size = 12),  
+    axis.title = element_text(size = 12),
+    axis.text = element_text(size = 10),
+    legend.position = "none",  
+    legend.title = element_text(size = 10, face = "bold"),
+    legend.text = element_text(size = 10)
+  )
+
+```
+
+***
+Sigara içme durumuna göre tıbbi harcamaların dağılımını gösteren bir kutu grafiği yer almaktadır. X ekseni bireylerin sigara içip içmediğini belirtirken ("no" sigara içmeyenleri, "yes" sigara içenleri temsil ediyor), Y ekseni tıbbi harcamaların miktarını göstermektedir. Kutu grafikleri, veri setinin dağılımını ve olası uç noktaları görselleştirir. Kutu grafiğindeki kutunun ortasındaki çizgi medyanı temsil ederken kutunun üst ve alt kenarları verinin %75 ve %25’lik dilimlerini gösterir. Kutu dışındaki çizgiler ise verinin çoğunun dış sınırlarını belirtir. Grafikte ayrıca, "no" grubunda aykırı değerler göze çarpmaktadır.
+
+Grafik incelendiğinde, sigara içenlerin tıbbi harcamalarının sigara içmeyenlere göre çok daha yüksek olduğu açıkça görülmektedir. Sigara içenlerin tıbbi harcamalarının medyanı yaklaşık 40.000 iken içmeyenlerin medyanı 10.000'in altında kalmaktadır. Bu durum sigara içmenin sağlık üzerinde büyük maliyetli etkileri olduğunu göstermektedir. Sigara içenlerde tıbbi harcamaların üst sınırının daha geniş olduğu ve çok daha yüksek seviyelere ulaştığı da dikkat çekmektedir. Sigara içmeyenlerde ise tıbbi harcamalar genelde daha düşük olup grafikte bazı aykırı değerler dışında harcamalar daha sınırlı bir aralıkta seyretmektedir.
+
+### Kutu Grafiği-2
+
+
+```{r}
+
+ggplot(insurance, aes(x = region, y = bmi, fill = region)) +
+  geom_boxplot(color = "black", alpha = 1.2) +  
+  scale_fill_manual(values = c(
+    "northeast" = "#ADD8E6",  
+    "northwest" = "#228B22", 
+    "southeast" = "#FFCC00",  
+    "southwest" = "#8A2BE2"   
+  )) +
+  labs(
+    title = "BMI Distribution by Region",
+    x = "Region",
+    y = "Body Mass Index (BMI)",
+    fill = "Region"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 16),  
+    plot.subtitle = element_text(hjust = 0.5, size = 12),  
+    axis.title = element_text(size = 12),
+    axis.text = element_text(size = 10),
+    legend.position = "none"  # Legend kaldırıldı çünkü x ekseni yeterli
+  )
+
+```
+
+***
+Farklı bölgelerdeki bireylerin Vücut Kitle İndeksi (BMI) dağılımı kutu grafikleri ile gösterilmektedir. Her bir kutu grafiği, bir bölgenin BMI değerlerini temsil eder. Grafiğin sağ üst kısmında görülen nokta gibi işaretler, istisnai uç değerlerin var olduğunu göstermektedir. BMI değerleri ne kadar yüksekse, obezite veya fazla kilolu olma riski o kadar yüksektir. Grafiğe bakıldığında "southeast" bölgesinin medyan BMI değerinin diğer bölgelere göre daha yüksek olduğu görülmektedir. "Güneydoğu"southeast" bölgesindeki bireylerin ortalama olarak daha yüksek BMI değerine sahip olduğunu ve belki de fazla kilo ile ilgili sorunların bu bölgede daha belirgin olduğunu düşündürebilir. "southeast" bölgesinden sonra en yüksek ortalama değerine "southwest" sahiptir. "northwest" ve "northeast" bölgelerinde ise dağılım daha dar görünmektedir, bu da bu bölgelerdeki BMI değerlerinin daha dengeli olduğunu gösterebilir.
+
+### Kutu Grafiği-3
+
+```{r}
+
+ggplot(insurance, aes(x = region, y = children, fill = region)) +
+  geom_boxplot(color = "black", alpha = 1.2) + 
+  scale_fill_manual(values = c(
+    "southwest" = "#F4A300",  
+    "southeast" = "#FF7F50",  
+    "northwest" = "#2E8B57",  
+    "northeast" = "#800080"   
+  )) +
+  labs(
+    title = "Number of Children by Region",
+    x = "Region",
+    y = "Number of Children",
+    fill = "Region"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
+    plot.subtitle = element_text(hjust = 0.5, size = 12),
+    axis.title = element_text(size = 12),
+    axis.text = element_text(size = 10),
+    legend.position = "none"  
+  )
+
+```
+
+***
+Kutu grafiği, dört farklı bölgeye göre çocuk sayısının dağılımını göstermektedir: kuzeydoğu, kuzeybatı, güneydoğu ve güneybatı. X ekseninde bölge isimleri yer alırken Y ekseni her bir bölgede bireylerin sahip olduğu çocuk sayısını göstermektedir. Grafikte tüm bölgeler için medyan çocuk sayısının 1 olduğu görülmektedir yani farklı bölgelerdeki insanların çoğu 1 çocuk sahibidir. Kutu grafiğinin %25’lik dilimi ile %75’lik dilimi arasında genellikle 0 ila 2 çocuk olduğu anlaşılmaktadır, bu durum da bölgeler arasında çocuk sayısında büyük bir fark olmadığını gösterir. Genel olarak, dört bölge arasında çocuk sayısındaki dağılımda önemli bir fark olmadığını söylemek mümkündür çünkü kutuların boyutu ve aralıkları oldukça benzer. Bu da farklı bölgeler arasında çocuk sahibi olma oranlarının oldukça eşit olduğunu gösteriyor.
+
+Referanslar
+=========================================
+Dashboard yapımında: 
+https://pkgs.rstudio.com/flexdashboard/articles/examples.html
+
+https://pkgs.rstudio.com/flexdashboard/articles/using.html
+
+https://epirhandbook.com/new_pages/flexdashboard.html
+                     
+Veri setini seçimi:  
+https://rkabacoff.github.io/datavis/Datasets.html
+
+Grafiklerin üretilmesinde: 
+https://www.data-to-viz.com/

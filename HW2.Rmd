@@ -1,0 +1,287 @@
+---
+title: "ÖDEV 02 - ZEYNEP HENDEM"
+subtitle: "220507015"
+output: 
+  tufte::tufte_html:
+    css: ../hw.css
+    tufte_variant: "envisioned"
+    highlight: pygments
+link-citations: yes
+---
+
+```{r setup, include=FALSE}
+options(repos = c(CRAN = "https://cloud.r-project.org/"))
+library(tidyverse)
+#library(dsbox)
+library(lubridate)
+library(ggplot2)
+    
+knitr::opts_chunk$set(out.width = "100%")
+```
+
+
+
+---
+## Packages
+
+This assignment will use the following packages:
+
+-   `tidyverse`: a collection of packages for doing data analysis in a "tidy" way
+
+We use the `library()` function to load packages.
+In your R Markdown document you should see an R chunk labelled `load-packages` which has the necessary code for loading both packages.
+---
+
+```{r load-packages}
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+install.packages("ggridges")
+install.packages("patchwork")
+install.packages("viridis")
+library(patchwork)
+library(ggridges)
+library(viridis)
+library(forcats)
+```
+
+
+---
+
+# About Data Set 
+
+The dataset for this assignment can be selected from the datasets given here
+
+https://rkabacoff.github.io/datavis/Datasets.html
+
+Feel free to choose whatever you want. You will try to answer general types of questions basically
+
+However, you need to choose another data set (Not same as your project!)
+---
+
+```{r load-data, message=FALSE, eval=TRUE}
+# Veri seti yükleme
+data(msleep)
+summary(msleep)
+
+#Eksik verilerin temizlenmesi
+msleep_clean <- msleep %>% filter(!is.na(bodywt), !is.na(conservation))
+```
+
+------
+
+## Exercise 1 (10 pts)
+
+By exploring the page of https://www.data-to-viz.com/#explore 
+
+- Pick up one category and focus on on type of graph (Such as Categorical -> One categorical variable -> treemap)
+
+- Briefly explain why your selection is the suitable choice for such data by stating the properties of plot type. 
+
+✏️️🧶 ✅ ⬆️ 
+
+İlk olarak seçtiğim msleep veri setindeki "conservation (korunma durumu)" kategorik değişkenini ve "bodywt" sayısal değişkenini incelemek üzere belirledim. Data to Viz sayfasından (Num & Cat -> One Num.One Cat.) seçtiğim değişkenlere uygun grafik türlerini inceledim. "Conservation" ve "bodywt" arasındaki ilişkiyi görselleştirmek, farklı korunma durumlarına sahip türlerin vücut ağırlığı açısından nasıl farklılaştığını ve bu farkların anlamlı olup olmadığını anlamamı sağladı. Data to Viz sayfasında yer alan grafikleri incelediğimde "Density" grafik türünün seçilen değişkenlere göre görselleştirmek için iyi bir araç olabileceğine karar verdim.
+
+Density grafikleri, verinin sürekli dağılımını görselleştirmede oldukça etkilidir. Sayısal değişken olan vücut ağırlığının farklı korunma durumu kategorileri için nasıl dağıldığını görmek, her bir kategorideki verinin yoğunluğunu daha net bir şekilde anlamamıza olanak sağlar. Gruplar arasındaki farklılıkların görselleştirilmesinde boxplot ya da violin plot gibi grafiklerden daha yumuşak bir geçiş sağlar ve daha iyi bir genel görünüm sunar. Verinin yoğunlaştığı bölgeleri net bir şekilde göstererek verinin çoğunluğunun nerede toplandığını anlamamıza yardımcı olur. Aynı zamanda aykırı değerler daha az belirgin olduğu için bu tür anomalileri tespit etmek zor olabilir ancak genel dağılımı anlamak açısından bu durum sorun yaratmayacaktır. Estetiksel açıdan renkler ve yoğunluk düzeyleriyle grupların birbirinden nasıl ayrıldığını görsel olarak izlemek, analizciye veriyi çok daha net bir şekilde sunar.
+
+Density grafiklerinin bu durumda "conservation" ve "bodywt" değişkenlerini görselleştirmek için en uygun araç olduğuna karar vermemin nedeni verinin dağılma biçimini ve farklı gruplar arasındaki ilişkiyi yumuşak bir şekilde göstermesidir. Bu grafik türü, farklı korunma durumlarına sahip türlerin vücut ağırlıkları arasındaki farkları daha net ve anlaşılır bir şekilde ortaya koyar. Bununla beraber verinin nasıl yayılacağını ve grupların birbirinden ne kadar farklılaştığını hızlıca gözlemlememizi sağlar.
+
+## Exercise 2 (30 pts)
+
+Under the same page
+
+- Look at the related **Story** based on your selection (Such as Categoric -> One categorical variable)
+
+- Try to create on of the presented plots under **Story** section based on your own data set by mimicking the related code. Discuss your created single plot
+
+- Discuss any kind of caveats (listed here https://www.data-to-viz.com/caveats.html) that we need to be aware of based on the created plot (Assume that I created line chart and there is an caveat called The spaghetti chart). Suggest a solution from that related list to improve your visualization to avoid the mentioned caveat  
+
+✏️️🧶 ✅ ⬆️ *
+
+Density grafik türü, farklı koruma durumlarına (conservation) göre vücut ağırlıklarının (bodywt) dağılımını görselleştirmek için kullanılmıştır. Geniş bir aralığa sahip olan vücut ağırlığı verilerini logaritmik bir eksende göstererek hem küçük hem de büyük değerlerin daha anlamlı bir şekilde kıyaslanmasına olanak sağlanmıştır. Logaritmik dönüşümü yapmamın amacı, vücut ağırlığı gibi dağılımı oldukça dengesiz olan (küçük değerlerin fazla, büyük değerlerin az olduğu) bir veri setinde daha dengeli bir görselleştirme yapmaktır. Bu dönüşüm sayesinde büyük ağırlıklar küçük değerlere baskın çıkmaz ve tüm dağılımı daha net bir şekilde incelenebilir.
+
+Density grafiğini (Num & Cat -> One Num.One Cat.) hikaye türündeki görselleştirme örneklerinden ilham alarak oluşturdum. Bu grafik türü her bir koruma kategorisi için yoğunluk eğrileri hem benzerlikleri hem de farklılıkları vurguluyor. Daha yüksek tepe noktalarına sahip kategoriler, bu kategorilerin belirli bir vücut ağırlığı aralığında yoğunlaştığını gösteriyor. Dağılımların genişliği ise o kategorideki türlerin vücut ağırlığı açısından ne kadar çeşitlilik gösterdiğini ifade ediyor. Log dönüşüm, küçük değerlerdeki detayları kaybetmeden büyük değerleri de görselleştirebilmemizi sağladı. x-ekseninde logaritmik dönüşüm uygulanarak büyük ve küçük vücut ağırlıkları arasındaki geniş farklılıklar daha yönetilebilir bir aralığa sıkıştırmış oldum. "viridis" renk paleti, renklerin hem estetik hem de erişilebilir olması açısından tercih ettim. Minimal tema ve renklerin dikkatlice seçilmesi, grafiğin sadeliğini ve okunabilirliğini artırdı.
+
+Bu grafikte oluşabilecek önemli bir sorun, yanıltıcı alan algısıdır. Yoğunluk eğrileri, her bir koruma kategorisinin vücut ağırlığı dağılımını tahmin ederek çizer ancak örneklem büyüklüğü küçük olan kategorilerde bu tahmin yanıltıcı olabilir. Örneğin; eğriler gerçekte olduğundan daha düzgün veya abartılı görünebilir. Bu durum yanlış yorumlamalara yol açabilir. Logaritmik eksen kullanımı da izleyiciler için kafa karıştırıcı olabilir. Log dönüşüm, değerler arasındaki mesafeleri doğrusal olmayan bir şekilde sıkıştırdığı için izleyicilerin ekseni doğru anlaması için ek açıklamalara ihtiyaç duyulabilir. Yoğunluk hesaplamalarında kullanılan bant genişliği seçimi de kritik bir rol oynar. Yanlış bir bant genişliği seçildiğinde eğriler aşırı pürüzsüz veya aşırı ayrıntılı olabilir. Kategorik bilgilerin görselleştirilmesiyle ilgili zorluklar da ortaya çıkabilir. Eğer koruma durumu (conservation) kategorilerinin sayısı fazla ise, yoğunluk sırtları üst üste binerek grafiğin karmaşık görünmesine neden olabilir.
+---
+
+```{r}
+msleep_clean <- msleep %>% filter(!is.na(bodywt), !is.na(conservation))
+
+msleep_clean %>%
+  ggplot(aes(y = conservation, x = bodywt, fill = conservation)) +
+  geom_density_ridges(alpha = 0.6, bandwidth = 0.5) +
+  scale_x_log10() +  
+  scale_fill_viridis(discrete = TRUE) +
+  theme_minimal() +  
+  theme(
+    legend.position = "none",
+    panel.spacing = unit(0.1, "lines"),
+    strip.text.x = element_text(size = 8)
+  ) +
+  xlab("Body Weight") +
+  ylab("Conservation Status")
+```
+---
+## Exercise 3 (30 pts)
+
+For some further illustration, using the Data Story concept
+
+- Create three different plots by following the same idea (Go to the Story page, see the examples and adapt the code for your needs)
+
+Remember that a data visualisation is just a pretty picture unless you know what the visualisation is about, so it is important to add axis labels and a title. Edit your code with a suitable title and axis labels. Try to be as clear as possible !
+
+✏️️🧶 ✅ ⬆️ 
+(Num & Cat -> One Num.One Cat.) hikaye türündeki görselleştirme örneklerinden esinlenerek üç farklı (Boxplot, Violin ve Histogram) grafik oluşturdum. 
+---
+```{r}
+#BOXPLOT GRAFİĞİ
+
+msleep_clean %>%
+  ggplot(aes(x = conservation, y = bodywt, fill = conservation)) +
+  geom_boxplot() + # Boxplot ile her kategorinin dağılımını gösteriyoruz.
+  geom_jitter(color = "grey", alpha = 0.3, size = 0.9) +
+  scale_fill_viridis(discrete = TRUE) + # Viridis renk paleti kullanarak kategorilere renk atıyoruz.
+  scale_y_log10() +  # Vücut ağırlığı eksenine logaritmik dönüşüm uyguluyoruz.
+  theme_minimal() +
+  theme(
+    legend.position = "none", 
+    panel.spacing = unit(0.1, "lines"), 
+    strip.text.x = element_text(size = 8) 
+  ) +
+  coord_flip() + # Grafiği yatay hale getiriyoruz.
+  xlab("Conservation Status") +
+  ylab("Body Weight")
+
+#VİOLİN GRAFİĞİ
+
+msleep_clean %>% 
+  mutate(conservation = fct_reorder(conservation, bodywt, .fun = mean, na.rm = TRUE)) %>% 
+  ggplot(aes(x = conservation, y = bodywt, fill = conservation, color = conservation)) +
+  geom_violin(width = 1.7, linewidth = 1) + 
+  scale_fill_viridis(discrete = TRUE) +
+  scale_color_viridis(discrete = TRUE) +
+  scale_y_log10() + # Logaritmik dönüşüm
+  theme_minimal() +
+  theme(legend.position = "none") +
+  coord_flip() +
+  xlab("Conservation Status") +
+  ylab("Body Weight (kg, log scale)")
+
+
+#HİSTOGRAM GRAFİĞİ
+
+msleep_clean %>%
+  mutate(conservation = fct_reorder(conservation, bodywt)) %>%
+  ggplot(aes(x = bodywt, color = conservation, fill = conservation)) +
+  geom_histogram(alpha = 0.6, binwidth = 0.5) + # Histogram çiziyoruz, şeffaflık ve bin genişliğini ayarlıyoruz. 
+  scale_fill_viridis(discrete = TRUE) +
+  scale_color_viridis(discrete = TRUE) +
+  scale_x_log10() +  
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    panel.spacing = unit(0.1, "lines"),
+    strip.text.x = element_text(size = 8)
+  ) +
+  xlab("Conservation Status") +
+  ylab("Body Weight") +
+  facet_wrap(~conservation) # Koruma durumlarına göre facet'ler oluşturuyoruz.
+
+```
+---
+
+## Exercise 4 (30 pts)
+
+Based on your findings above (created three plots)
+
+- Merge all the plots using patchwork package idea to create 2x2 plot figure. 
+
+- Complete your journey by interpreting all the sub-plots based on the data storytelling concept. What they tell us, is there any difference among those, which one could be more effective in your mind ?
+
+✏️️🧶 ✅ ⬆️ *
+
+1. Grafik: Density Plot
+Density grafiği, farklı koruma statülerine sahip hayvanların vücut ağırlıkları dağılımlarını yoğunluk eğrileriyle gösteriyor. Grafik, koruma statüsüne göre vücut ağırlıklarının nasıl değiştiğini daha akıcı bir şekilde sunuyor ve bu dağılımların birbirine nasıl benzediğini veya farklılaştığını ortaya koyuyor. Örneğin, "lc" (least concern) statüsündeki türlerin ağırlık dağılımı geniş bir alana yayılırken "domesticated" (evcilleştirilmiş) türler daha dar bir dağılıma sahip. Ayrıca logaritmik eksen kullanımı, daha geniş bir aralıkta ağırlık dağılımlarını görmemizi sağlıyor. Bu grafik, verilerin genel yapısını anlamak için oldukça etkili diyebiliriz.
+
+2. Grafik: Boxplot
+Kutu grafiği, her koruma statüsüne göre vücut ağırlıklarının merkezi eğilimlerini ve değişkenliklerini karşılaştırmak için kullanılıyor. Kutu içindeki çizgi medyanı gösterirken kutunun üst ve alt sınırları, verilerin %25 ve %75'lik dilimlerini temsil ediyor. "cd" (critically endangered) statüsündeki türlerin ağırlıkları diğerlerine göre oldukça düşük bir varyans gösterirken "vu" (vulnerable) türlerin ağırlık dağılımı daha geniş. Grafik, logaritmik ölçek kullanarak uç noktaların daha iyi analiz edilmesini sağlıyor. Bu grafik, veri kümelerinin medyanını ve aşırı değerleri karşılaştırmak için oldukça yararlı.
+
+3. Grafik: Violin Plot
+Keman grafiği, kutu grafiğinin daha detaylı bir versiyonu olarak düşünülebilir. Hem dağılımın yoğunluğunu hem de merkezi eğilimleri gösterir. Bu grafikte her bir koruma statüsüne göre vücut ağırlıklarının tam dağılımını gözlemledim. Bazı statülerde yoğunluğun sadece belli bir alanda toplandığını, diğerlerinde ise geniş bir dağılım olduğunu fark edebiliriz. Özellikle "domesticated" ve "lc" statüleri arasında belirgin farklar var. Yoğunluk alanları bu grafikte daha belirgin olduğu için dağılımların şekli hakkında daha net bilgi elde edilebilir. Yalnız seçtiğim değişkenler için bu grafiğin okunabilirliğinin yüksek olmadığını söylemek mümkün.
+
+4. Grafik: Histogram
+Her koruma statüsüne göre vücut ağırlıklarının dağılımlarını histogram olarak gösteriyor. Belli aralıklardaki ağırlıklarda kaç tür olduğunu sayısal olarak belirlemek amacıyla histogramlar oldukça etkilidir. Her bir koruma statüsünde vücut ağırlıklarının hangi aralıklarda yoğunlaştığını kolayca görebiliyoruz. Örneğin, "domesticated" statüsündeki türler genellikle belirli bir ağırlık aralığında yoğunlaşırken "vu" statüsündeki türlerin daha geniş bir dağılıma sahip olduğunu görüyoruz. Bu grafik türü, verilerin frekans dağılımını anlamak da yardımcı olur.
+
+Her bir grafik farklı açılardan benzer veriyi sunuyor. Density plot ve violin plot, verinin dağılımını daha detaylı gösterirken kutu grafiği ve histogram daha özetleyici istatistikler sağlıyor. Kutu grafiği ve keman grafiği, merkezi eğilimleri ve dağılım genişliklerini karşılaştırmak için çok kullanışlı denilebilir. Yoğunluk grafiği, verinin şekilsel yapısını anlamak açısından en etkili görsellerden birini oluşturmamızı sağlıyor. Sonuç olarak, veriyi nasıl sunacağımıza karar verirken amacımıza göre seçim yapmalıyız. Eğer veri setinin genel yapısını ve dağılımını göstermek istiyorsak, yoğunluk veya keman grafiği tercih edilebilirken; merkezi eğilimleri karşılaştırmak istiyorsak kutu grafiği en uygun seçenek olacaktır. Histogram ise frekans dağılımı açısından güçlü bir araçtır.
+---
+```{r}
+
+# 1. Grafik: Density
+p1 <- msleep_clean %>%
+  ggplot(aes(y = conservation, x = bodywt, fill = conservation)) +
+  geom_density_ridges(alpha = 0.6, bandwidth = 0.5) +
+  scale_x_log10() +  # bodywt için logaritmik eksen kullanılıyor
+  scale_fill_viridis(discrete = TRUE) +
+  theme_minimal() +  # Temayı minimal olarak değiştirdik
+  theme(
+    legend.position = "none",
+    panel.spacing = unit(0.1, "lines"),
+    strip.text.x = element_text(size = 8)
+  ) +
+  xlab("Body Weight") +
+  ylab("Conservation Status")
+
+# 2. Grafik: Boxplot
+p2 <- msleep_clean %>%
+  ggplot(aes(x = conservation, y = bodywt, fill = conservation)) +
+  geom_boxplot() +
+  geom_jitter(color = "grey", alpha = 0.3, size = 0.9) +
+  scale_fill_viridis(discrete = TRUE) +
+  scale_y_log10() +  # y ekseninde logaritmik dönüşüm
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    panel.spacing = unit(0.1, "lines"),
+    strip.text.x = element_text(size = 8)
+  ) +
+  coord_flip() +
+  xlab("Conservation Status") +
+  ylab("Body Weight")
+
+# 3. Grafik: Violin
+p3 <- msleep_clean %>% 
+  mutate(conservation = fct_reorder(conservation, bodywt, .fun = mean, na.rm = TRUE)) %>% 
+  ggplot(aes(x = conservation, y = bodywt, fill = conservation, color = conservation)) +
+  geom_violin(width = 1.7, linewidth = 1) + # linewidth kullanılıyor
+  scale_fill_viridis(discrete = TRUE) +
+  scale_color_viridis(discrete = TRUE) +
+  scale_y_log10() + # Logaritmik dönüşüm
+  theme_minimal() +
+  theme(legend.position = "none") +
+  coord_flip() +
+  xlab("Conservation Status") +
+  ylab("Body Weight")
+
+# 4. Grafik: Histogram
+p4 <- msleep_clean %>%
+  mutate(conservation = fct_reorder(conservation, bodywt)) %>%
+  ggplot(aes(x = bodywt, color = conservation, fill = conservation)) +
+  geom_histogram(alpha = 0.6, binwidth = 0.5) +  # Bin width değeri bodywt için uygun bir değerle ayarlandı
+  scale_fill_viridis(discrete = TRUE) +
+  scale_color_viridis(discrete = TRUE) +
+  scale_x_log10() +  # bodywt değişkeni için logaritmik dönüşüm
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    panel.spacing = unit(0.1, "lines"),
+    strip.text.x = element_text(size = 8),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  ) +
+  xlab("Conservation Status") +
+  ylab("Body Weight") +
+  facet_wrap(~conservation)
+
+# Tüm grafiklerin birleştirilmesi
+p1 + p2 + p3 + p4 + plot_layout(ncol = 2)
+```
